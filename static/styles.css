@@ -1,0 +1,46 @@
+/* todo */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap');
+
+*
+{
+    font-family: 'Space Grotesk', sans-serif;
+}
+.bg-black {
+    background-color: #09090b;
+}
+.bg-black-800:hover {
+    background-color: #18181b;
+}
+.register-button:hover {
+    background-color: #fde68a;
+    color: #09090b;
+    /* transition */
+    transition: 0.3s;
+}
+
+.bg-yellow-150 {
+    background-color: #fde68a;
+}
+.login-button:hover {
+    background-color: #bcdacb;
+    color: #09090b;
+    border-color: #09090b;
+    /* transition */
+    transition: 0.3s;
+}
+
+.logout-button:hover {
+    background-color: #efd1de;
+    color: #09090b;
+    /* transition */
+    transition: 0.3s;
+}
+
+.zinc-bg {
+    background-color: #27272a;
+}
+
+.link-font:hover{
+    color: #fde68a;
+    text-decoration: none;
+}
