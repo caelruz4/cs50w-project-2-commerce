@@ -6,6 +6,9 @@
 <head>
     <meta charset="utf-8" />
     <title>{% block title %}Auctions{% endblock %}</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css">
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
     <!-- style -->
     <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
@@ -57,7 +60,8 @@
                         id="user-dropdown">
                         <div class="px-4 py-3">
                             <span class="block text-sm text-gray-900 dark:text-white">{{ user.username }}</span>
-                            <span class="block text-sm  text-gray-500 truncate dark:text-gray-400">{{ user.username }}@gmail.com</span>
+                            <span class="block text-sm  text-gray-500 truncate dark:text-gray-400">{{ user.username
+                                }}@gmail.com</span>
                         </div>
                     </div>
 
@@ -129,7 +133,15 @@
         {% endblock %}
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                $('.image-popup').magnificPopup({type:'image'});
+            });
+        </script>
 </body>
 
 </html>
