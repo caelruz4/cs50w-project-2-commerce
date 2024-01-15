@@ -1,10 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .models import *
+from django.contrib import messages
+from .forms import ListingForm
 
 
 def index(request):
@@ -66,13 +68,20 @@ def register(request):
         return render(request, "auctions/register.html")
 
 # view listing info
-@login_required
 def listing(request, listing_id):
     listing = get_object_or_404(Listing, pk=listing_id)
     on_watchlist = Watchlist.objects.filter(user=request.user, listing=listing).exists()
     highest_bid = get_highest_bid(listing_id)
     comments = Comment.objects.filter(listing=listing)
     is_owner = listing.owner == request.user
+    winner = None
+    if not listing.active:
+        check_win = Bid.objects.filter(listing=listing).order_by('-amount').first().user
+        if check_win == request.user:
+            winner = check_win
+    else:
+        winner = None
+
     context = {
         'listing': listing,
         'highest_bid': highest_bid,
@@ -80,6 +89,7 @@ def listing(request, listing_id):
         'comments': comments,
         'is_owner': is_owner,
         "active": listing.active,
+        "winner": winner
 
     }
     return render(request, 'auctions/listing.html', context)
@@ -104,15 +114,16 @@ def bid(request, listing_id):
         highest_bid = get_highest_bid(listing_id)
         # validate bid
         if amount <= highest_bid or amount < initial_price:
-            return render(request, "auctions/listing.html", {
-                "listing": listing,
-                "highest_bid": highest_bid,
-                "message": "Your bid must be higher than the current highest bid."
-            })
+            messages.error(request, "Your bid must be higher than the current highest bid.")
+            return redirect('listing', listing_id=listing_id)
+        
         else:
             # save bid
             bid = Bid.objects.create(amount=amount, listing=listing, user=user)
-            return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+            bid.save()
+            # redirect to listing and
+            messages.success(request, f"You have successfully made your bid!")
+            return redirect('listing', listing_id=listing_id)
     # redirect to listing
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
@@ -130,7 +141,6 @@ def add_watchlist(request, listing_id):
     # redirect to listing
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
-# remove from watchlist
 @login_required
 def remove_watchlist(request, listing_id):
     if request.method == "POST":
@@ -138,10 +148,8 @@ def remove_watchlist(request, listing_id):
         user = request.user
         watchlist = Watchlist.objects.get(listing=listing, user=user)
         watchlist.delete()
-        # return to listing and 
         return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
-    # redirect to listing
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
 # send comment
@@ -167,7 +175,9 @@ def close(request, listing_id):
         listing.active = False
         listing.save()
         # return to listing and 
-        return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+        messages.success(request, 'This listing has been closed')
+        return redirect('listing', listing_id=listing_id)
+
 
     # redirect to listing
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
@@ -184,3 +194,57 @@ def open(request, listing_id):
 
     # redirect to listing
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+
+# all categories
+def categories(request):
+    categories = Category.objects.all()
+    # amount of elements in that category
+    for category in categories:
+        category.amount = Listing.objects.filter(category=category).count()
+
+    context = {
+        "categories": categories
+    }
+    return render(request, "auctions/categories.html", context)
+
+# category
+def category(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
+    listings = Listing.objects.filter(category=category)
+    context = {
+        "category": category,
+        "listings": listings
+    }
+    return render(request, "auctions/category.html", context)
+
+# watchlist
+def watchlist(request):
+    user = request.user
+    watchlists = Watchlist.objects.filter(user=user)
+    # print every listing on watchlist
+    context = {
+        "watchlist": watchlists
+    }
+    return render(request, "auctions/watchlist.html", context)
+
+# create listing route
+@login_required
+def create(request):
+    if request.method == "POST":
+        form = ListingForm(request.POST, request.FILES)
+        if form.is_valid():
+            listing = form.save(commit=False)
+            listing.owner = request.user
+            listing.save()
+            return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+        else:
+            # print errors
+            print(form.errors)
+        
+    form = ListingForm()
+    categories = Category.objects.all()
+    context = {
+            "form": form,
+            "categories": categories
+        }
+    return render(request, "auctions/create.html", context)

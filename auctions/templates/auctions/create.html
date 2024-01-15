@@ -1,0 +1,48 @@
+{% extends "auctions/layout.html" %}
+{% block title %}Create{% endblock %}
+{% block body %}
+
+<section class="active-listings-main bg-blue-100">
+    <h2 class="text-4xl font-bold dark:text-white">Create Listing</h2>
+
+    <div class="bg-gray-100 p-6 border border-gray-900 my-6">
+        <form action="{% url 'create' %}" method="post" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+            <div class="flex flex-col">
+                <label for="id_title" class="text-lg font-semibold mb-2">Title:</label>
+                <input type="text" name="title" maxlength="255" required id="id_title" class="p-2 border border-gray-300 rounded-md">
+            </div>
+
+            <div class="flex flex-col">
+                <label for="id_description" class="text-lg font-semibold mb-2">Description:</label>
+                <textarea name="description" cols="40" rows="10" required id="id_description" class="p-2 border border-gray-300 rounded-md"></textarea>
+            </div>
+
+            <div class="flex flex-col">
+                <label for="id_category" class="text-lg font-semibold mb-2">Category:</label>
+                <select name="category" required id="id_category" class="p-2 border border-gray-300 rounded-md">
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex flex-col">
+                <label for="id_initial_price" class="text-lg font-semibold mb-2">Initial price:</label>
+                <input type="number" name="initial_price" step="0.01" required id="id_initial_price" class="p-2 border border-gray-300 rounded-md" min=0>
+            </div>
+
+            <div class="flex flex-col">
+                <label for="id_image" class="text-lg font-semibold mb-2">Image:</label>
+                <input type="file" name="image" accept="image/*" id="id_image" class="p-2 border border-gray-300 rounded-md">
+            </div>
+
+            <input type="submit" value="Create" class="bg-black text-white rounded-none border text-lg border-gray-900 login-button px-6 py-2 font-semibold hover:bg-blue-700 cursor-pointer">
+        </form>
+    </div>
+</section>
+
+
+
+
+{% endblock %}
