@@ -18,8 +18,26 @@
     transition: 0.3s;
 }
 
+.bid-button:hover {
+    background-color: #bef264;
+    color: #09090b;
+    /* transition */
+    transition: 0.3s;
+}
+
 .bg-yellow-150 {
     background-color: #fde68a;
+}
+.bg-lime-300 {
+    background-color: #bef264;
+}
+.text-lime-800 {
+    color: #65a30d;
+}
+
+.bg-gray
+{
+    background-color: #e2e8f0;
 }
 .login-button:hover {
     background-color: #bcdacb;
@@ -29,6 +47,35 @@
     transition: 0.3s;
 }
 
+.watchlist-button:hover {
+    /* transition */
+    transition: 0.3s;
+    background-color: #e2e8f0;
+
+    svg {
+        fill: #be123c;
+        stroke: #be123c;
+    }
+
+}
+
+.remove-watchlist-button {
+    svg {
+        fill: #be123c;
+        stroke: #be123c;
+    }
+}
+.remove-watchlist-button:hover {
+    /* transition */
+    transition: 0.3s;
+    background-color: #e2e8f0;
+
+    svg {
+        fill: none;
+        stroke:#09090b;
+    }
+
+}
 .logout-button:hover {
     background-color: #efd1de;
     color: #09090b;
@@ -43,4 +90,26 @@
 .link-font:hover{
     color: #fde68a;
     text-decoration: none;
+}
+
+.close-button:hover {
+    transition: 0.3s;
+    background-color: #fef08a;
+    /* change svg */
+}
+
+.close-button:hover .group > svg:first-child {
+    display: none;
+}
+
+.close-button:hover .group > svg:last-child {
+    display: inline-block;
+}
+
+.open-button:hover .group > svg:first-child {
+    display: none;
+}
+
+.open-button:hover .group > svg:last-child {
+    display: inline-block;
 }

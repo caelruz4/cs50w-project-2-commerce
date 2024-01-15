@@ -10,10 +10,9 @@
             {% for listing in listings %}
             <div class="max-w-sm bg-white border p-4 border-gray-900 rounded-none dark:bg-gray-800 dark:border-gray-700">
                 <a href="#">
-                    <!-- Asegúrate de que todas las imágenes tengan el mismo tamaño -->
                     <img class=" w-full border border-gray-900 h-48 object-cover" src="{% if listing.image %}{{ listing.image.url }}{% endif %}" alt="" />
                 </a>
-                <div class="p-4 h-full"> <!-- Reduje el padding para reducir el tamaño de la tarjeta -->
+                <div class="p-4 h-full"> 
                     <a href="#">
                         <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ listing.title }}</h5>
                     </a>

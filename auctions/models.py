@@ -16,6 +16,7 @@ class Listing(models.Model):
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='auctions')
     created_at = models.DateTimeField(auto_now_add=True)
+    # updated time
     active = models.BooleanField(default=True, null=False)
     initial_price = models.DecimalField(max_digits=10, decimal_places=2)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -36,6 +37,7 @@ class Comment(models.Model):
     content = models.TextField()
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.user} - {self.listing} - {self.content}"
 
