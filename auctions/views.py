@@ -7,7 +7,15 @@ from django.contrib.auth.decorators import login_required
 from .models import *
 from django.contrib import messages
 from .forms import ListingForm
+from django.contrib.auth.decorators import user_passes_test
 
+
+def user_is_authenticated(user):
+    return user.is_authenticated
+
+login_required_custom = user_passes_test(
+    user_is_authenticated, login_url='login'
+)
 
 def index(request):
     # send all active listings
@@ -70,7 +78,11 @@ def register(request):
 # view listing info
 def listing(request, listing_id):
     listing = get_object_or_404(Listing, pk=listing_id)
-    on_watchlist = Watchlist.objects.filter(user=request.user, listing=listing).exists()
+    try:
+        on_watchlist = Watchlist.objects.filter(listing=listing, user=request.user).exists()
+    except:
+        on_watchlist = False
+
     highest_bid = get_highest_bid(listing_id)
     comments = Comment.objects.filter(listing=listing)
     is_owner = listing.owner == request.user
@@ -103,7 +115,7 @@ def get_highest_bid(listing_id):
         return 0
     
 # make a bid
-@login_required
+@login_required_custom
 def bid(request, listing_id):
     if request.method == "POST":
         amount = float(request.POST['amount'])
@@ -141,7 +153,7 @@ def add_watchlist(request, listing_id):
     # redirect to listing
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
-@login_required
+@login_required_custom
 def remove_watchlist(request, listing_id):
     if request.method == "POST":
         listing = get_object_or_404(Listing, pk=listing_id)
@@ -153,7 +165,7 @@ def remove_watchlist(request, listing_id):
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
 # send comment
-@login_required
+@login_required_custom
 def comment(request, listing_id):
     if request.method == "POST":
         content = request.POST['content']
@@ -168,7 +180,7 @@ def comment(request, listing_id):
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
 # close listing
-@login_required
+@login_required_custom
 def close(request, listing_id):
     if request.method == "POST":
         listing = get_object_or_404(Listing, pk=listing_id)
@@ -183,7 +195,7 @@ def close(request, listing_id):
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
 # open
-@login_required
+@login_required_custom
 def open(request, listing_id):
     if request.method == "POST":
         listing = get_object_or_404(Listing, pk=listing_id)
@@ -218,6 +230,8 @@ def category(request, category_id):
     return render(request, "auctions/category.html", context)
 
 # watchlist
+@login_required_custom
+
 def watchlist(request):
     user = request.user
     watchlists = Watchlist.objects.filter(user=user)
@@ -228,7 +242,7 @@ def watchlist(request):
     return render(request, "auctions/watchlist.html", context)
 
 # create listing route
-@login_required
+@login_required_custom
 def create(request):
     if request.method == "POST":
         form = ListingForm(request.POST, request.FILES)
